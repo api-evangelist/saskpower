@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+<Document>
+<Style id="in-progress">
+<LineStyle> <width>1</width> <color>a0808080</color> </LineStyle> <PolyStyle> <color>802272E3</color> </PolyStyle> </Style>
+<Style id="coming-up">
+<LineStyle> <width>1</width> <color>a0808080</color> </LineStyle> <PolyStyle> <color>80656361</color> </PolyStyle> </Style>
+<Style id="complete">
+<LineStyle> <width>1</width> <color>808080a0</color> </LineStyle> <PolyStyle> <color>CC425800</color> </PolyStyle> </Style>
+<Style id="unassigned">
+<LineStyle> <width>1</width> <color>a0808080</color> </LineStyle> <PolyStyle> <color>00000000</color> </PolyStyle> </Style>
+<Folder>
+<name>453</name>
+<Placemark>
+<name>Unity - Macklin Reward</name>
+<styleUrl>#complete</styleUrl>
+<Polygon xmlns="http://earth.google.com/kml/2.1"><outerBoundaryIs><LinearRing><coordinates>-109.206240120036,52.40675848834413,0 -109.2099402402479,52.44554631134805,0 -110.0065545664361,52.47591720998773,0 -110.0065359021616,52.4194547326166,0 -110.0287145349169,52.41928774980986,0 -110.0288042824554,52.39018300394373,0 -110.0065186032117,52.39035975403969,0 -110.0064755094526,51.89623087409993,0 -109.206240120036,52.40675848834413,0</coordinates></LinearRing></outerBoundaryIs></Polygon><description><![CDATA[<table><tbody><tr style='height: 10px !important;'><td></td><td></td><td></td></tr><tr></tr><tr style='vertical-align: text-top; background-color: #F7F8FA;'><td style='border: 1px solid #ddd; padding: 2px;'> Last updated - Nov 03 15:55</td><td style='border: 1px solid #ddd; padding: 2px;'></td><td style="border: 1px solid #ddd; padding: 2px;"><span style="padding-right: 16px; margin-right: 5px; border-radius: 100%;background-color: #008542; border: 1px solid #008542;""></span>Complete</td></tr></tbody></table>]]></description>
+</Placemark>
+</Folder>
+<Folder>
+<name>457</name>
+<Placemark>
+<name>Unity - Wilkie</name>
+<styleUrl>#complete</styleUrl>
+<Polygon xmlns="http://earth.google.com/kml/2.1"><outerBoundaryIs><LinearRing><coordinates>-108.201300645909,51.95737585873131,0 -108.2012925981635,51.96898732441439,0 -108.1815099418912,51.96899124267942,0 -108.1813793567478,52.07073547867896,0 -108.1575614947031,52.07074355955236,0 -108.1575171385909,52.10714539414164,0 -108.1454335905012,52.11441151271067,0 -108.3425785931697,52.11460348875589,0 -108.3835751078878,52.11460193510988,0 -108.3838515535595,52.20160670878767,0 -108.3845990583062,52.20202121342292,0 -108.4076020355236,52.21638645731806,0 -108.4077038672902,52.23822010679017,0 -108.4268847385587,52.23821134492358,0 -108.4264357692146,52.40582857382031,0 -108.402484419034,52.405847043759,0 -108.4024795636478,52.42032553286971,0 -108.402437559194,52.44941271026836,0 -108.4982743174454,52.44939802448845,0 -108.4982795791527,52.47191406985024,0 -109.0856986757652,52.46010218037871,0 -109.0801279799956,52.39991705256368,0 -109.0921873566185,52.3994995461175,0 -108.201300645909,51.95737585873131,0</coordinates></LinearRing></outerBoundaryIs></Polygon><description><![CDATA[<table><tbody><tr style='height: 10px !important;'><td></td><td></td><td></td></tr><tr></tr><tr style='vertical-align: text-top; background-color: #F7F8FA;'><td style='border: 1px solid #ddd; padding: 2px;'> Last updated - Nov 03 15:56</td><td style='border: 1px solid #ddd; padding: 2px;'></td><td style="border: 1px solid #ddd; padding: 2px;"><span style="padding-right: 16px; margin-right: 5px; border-radius: 100%;background-color: #008542; border: 1px solid #008542;""></span>Complete</td></tr></tbody></table>]]></description>
+</Placemark>
+<!-- EXCERPT: truncated by API Evangelist after 2 of 494 Placemark elements. The live document is the full response from https://www.saskpower.com/api/sitecore/Content/GetSmartMeterKmlFile (captured 2026-07-27). Closing tags below were added to keep this excerpt well-formed XML. -->
+</Folder>
+</Document>
+</kml>

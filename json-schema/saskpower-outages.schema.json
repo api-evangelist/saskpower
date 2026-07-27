@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/saskpower/refs/heads/main/json-schema/saskpower-outages.schema.json",
+  "title": "SaskPower Live Outage JSON Feed",
+  "description": "Schema of the response returned by GET https://www.saskpower.com/api/sitecore/Content/GetOutageJsonFile. DERIVED by API Evangelist from the verbatim live response captured 2026-07-27 (examples/saskpower-outages-response.json, HTTP 200, application/json, 4,256 bytes, 13 outages). SaskPower publishes no schema, no reference and no version for this endpoint; it is referenced only from the markup of the Outage Map and Updates page. The envelope fields errorCode / errorMessage / errorDetails / callId / time are the shared Sitecore controller envelope also seen on other SaskPower endpoints (errors/saskpower-error-codes.yml); errorCode 0 accompanies a successful response.",
+  "x-provenance": {
+    "generated": "2026-07-27",
+    "method": "derived",
+    "source": "examples/saskpower-outages-response.json",
+    "authoritative": false,
+    "note": "API Evangelist derivation from one observed response. Not published or endorsed by SaskPower."
+  },
+  "type": "object",
+  "properties": {
+    "Outages": {
+      "type": ["array", "null"],
+      "description": "Current outage alerts, one entry per affected service region.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "OutageId": { "type": ["integer", "null"], "description": "SaskPower outage identifier. Sequential; the same identifier space appears in the planned-outage RSS guids (https://occ.saskpower.com/PlannedOutage/Edit/<id>)." },
+          "RegionId": { "type": ["integer", "null"], "description": "Service-region identifier. Joins to the Folder/name values in the outage map KML and to the ?rid= query parameter accepted by https://outagemap.saskpower.com/Files/GetKmlFile." },
+          "Region": { "type": ["string", "null"], "description": "Human-readable region name, e.g. 'Weyburn East - Halbrite Griffin'." },
+          "Planned": { "type": ["string", "null"], "description": "Outage class. Observed values: 'Planned', 'Unplanned'.", "examples": ["Planned", "Unplanned"] },
+          "Alerts": {
+            "type": ["array", "null"],
+            "description": "Free-text operator alerts for the region.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "CreateDate": { "type": ["string", "null"], "description": "Alert timestamp as an unqualified display string, e.g. 'Jul 27 10:27'. No year, no timezone and no ISO 8601 form is published; Saskatchewan observes CST year-round (UTC-6, no DST)." },
+                "Message": { "type": ["string", "null"], "description": "Operator-written free text. Dates inside the text are inconsistent (both '7/29/26' and '7/29' observed) and are not machine-parseable." }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "errorCode": { "type": ["integer", "null"], "description": "Sitecore controller envelope. 0 on success." },
+    "errorMessage": { "type": ["string", "null"], "description": "Null on success." },
+    "errorDetails": { "type": ["string", "object", "array", "null"], "description": "Null on success." },
+    "callId": { "type": ["string", "null"], "description": "Correlation identifier. Null in the observed success response." },
+    "time": { "type": ["string", "null"], "description": "Microsoft JSON date literal /Date(<epoch-milliseconds>)/ where populated. Null in the observed success response." }
+  },
+  "additionalProperties": true
+}

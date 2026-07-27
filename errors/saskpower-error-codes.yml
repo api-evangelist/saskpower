@@ -1,0 +1,119 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  live probes of SaskPower endpoints + the site's own /assets/scripts/SP.scripts.js
+  handlers, 2026-07-27
+format: proprietary
+rfc9457: false
+note: >-
+  SaskPower publishes no error reference. This catalogue is derived from what the
+  endpoints actually return and from the error codes the site's own JavaScript
+  branches on — those branches are the only published statement of what a code
+  means, and each meaning below is taken from the UI state the script switches to,
+  not invented. RFC 9457 application/problem+json is not used anywhere on the
+  estate. There are no decline codes: SaskPower is a utility, not a payment
+  processor, and no payment authorization surface is public.
+envelopes:
+- name: Sitecore controller envelope
+  applies_to: >-
+    /api/sitecore/* and /ignitionapi/* controller actions (both the public data
+    feeds and the internal form handlers)
+  http_status: 200
+  shape:
+    errorCode: integer, 0 on success
+    errorMessage: string or null
+    errorDetails: string or null
+    callId: string or null
+    time: >-
+      either a Microsoft JSON date literal /Date(<epoch-ms>)/ or an
+      "MM/dd/yyyy HH:mm:ss" string, depending on the controller
+  anti_pattern: >-
+    The HTTP status is 200 even when errorCode carries a backend failure. A client
+    that only checks the status code will treat a failed call as a success. This
+    is the single most important thing to know about consuming any SaskPower
+    endpoint.
+  example_success: |
+    {"Outages":[...],"errorCode":0,"errorMessage":null,"errorDetails":null,"callId":null,"time":null}
+  example_failure: |
+    {"messageHeader":null,"b2coid":null,"installationNumber":null,"errorCode":599,
+     "errorMessage":"The Http Server replied with a [500] status code-{ActivityName=SendHTTPRequest, ProcessName=MainProcesses.GetOutageStatusDetails, ModuleName=SaskPower_ESB_getOutageStatusDetails}",
+     "errorDetails":null,"callId":null,"time":"07/27/2026 20:54:16"}
+- name: Sitecore soft-404
+  applies_to: unknown paths on www.saskpower.com
+  http_status: 200
+  shape: >-
+    HTML page with <title>404</title>, reached by a 302 to
+    /404?item=<requested-path>&user=extranet%5cAnonymous&site=SaskPower. A 200
+    from this host is not evidence that a resource exists.
+- name: Mashery gateway error
+  applies_to: api.saskpower.com
+  http_status: 596
+  shape: >-
+    text/xml body "<h1>596 Service Not Found</h1>" with response headers
+    x-mashery-error-code: ERR_596_SERVICE_NOT_FOUND and Server: Mashery Proxy.
+    Returned for every path probed, including /v1, /v2, /openapi.json and both
+    .well-known paths.
+errors:
+- code: 0
+  envelope: Sitecore controller envelope
+  meaning: Success.
+  evidence: observed on GET /api/sitecore/Content/GetOutageJsonFile
+- code: 599
+  envelope: Sitecore controller envelope
+  meaning: >-
+    Upstream integration failure. The Sitecore controller wraps a non-2xx from
+    SaskPower's internal ESB and returns it as errorCode 599 with the raw upstream
+    message.
+  remediation: >-
+    Nothing a caller can do; it is a backend fault. Note that the message leaks
+    SaskPower's internal integration topology (ActivityName, ProcessName,
+    ModuleName, e.g. SaskPower_ESB_getOutageStatusDetails) to anonymous callers —
+    recorded here as an observation, not as a capability.
+  evidence: >-
+    observed on POST/GET /api/sitecore/ReportAnOutage/GetOutageStatus with no
+    parameters, 2026-07-27
+- code: 200111
+  envelope: Sitecore controller envelope
+  surface: /api/sitecore/ReportAnOutage/GetinstallationLookup, /api/sitecore/ReportAnOutage/GetOutageStatus
+  meaning: >-
+    An outage has already been reported for this installation. The site's script
+    switches the UI to its "already reported outage" state.
+  evidence: SP.scripts.js branch on 200111===e.errorCode
+- code: 200112
+  envelope: Sitecore controller envelope
+  surface: /api/sitecore/ReportAnOutage/*
+  meaning: >-
+    An outage has already been reported for this location (as distinct from this
+    specific installation). Script switches to the "already reported location"
+    state.
+  evidence: SP.scripts.js branch on 200112===e.errorCode
+- code: 200113
+  envelope: Sitecore controller envelope
+  surface: /api/sitecore/ReportAnOutage/*
+  meaning: >-
+    Handled identically to 200112 by the site — already reported for this
+    location.
+  evidence: SP.scripts.js branch on 200113===e.errorCode
+- code: 200114
+  envelope: Sitecore controller envelope
+  surface: /api/sitecore/ReportAnOutage/*
+  meaning: >-
+    Unable to process the outage report. Script shows "Unable to process outage".
+  evidence: SP.scripts.js branch on 200114===e.errorCode
+- code: 200115
+  envelope: Sitecore controller envelope
+  surface: /api/sitecore/ReportAnOutage/GetinstallationLookup
+  meaning: >-
+    Address lookup returned no match — treated as "Location not found" when the
+    response carries an empty addressArray, and treated as a soft success when
+    addresses are present.
+  evidence: SP.scripts.js branch on 200115===e.errorCode
+public_feed_errors:
+  detail: >-
+    None of the five public data feeds returned a non-200 or a populated errorCode
+    in any probe on 2026-07-27. No 4xx or 5xx path is documented for them, no
+    429 was observed, and no Retry-After is emitted. The failure modes that do
+    exist are structural rather than coded: the RSS channel's own atom:link
+    self-reference (http://www.saskpower.com/feeds/outages.xml) returns a
+    SaskPower "500 Server Error" HTML page, and the smart-meter KML is served with
+    Content-Type text/html despite an XML body.

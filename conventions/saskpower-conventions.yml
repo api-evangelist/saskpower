@@ -1,0 +1,180 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  examples/ captures + live response headers, 2026-07-27; SaskPower Digital Terms
+  and Conditions (February 2022)
+note: >-
+  SaskPower documents no conventions at all — there is no API reference, no
+  getting-started page and no developer program. Everything below is either
+  observed on the wire or quoted from the one governing document SaskPower does
+  publish, the Digital Terms and Conditions PDF linked from the "Where Your Power
+  Comes From" page. Conventions that are neither published nor observable are
+  recorded as `none` or `unknown` rather than guessed. There is no idempotency
+  contract, no pagination, no versioning and no rate-limit signalling on this
+  estate, so no `Idempotency` pointer is wired — recording their absence is the
+  finding.
+authentication:
+  style: none (anonymous HTTPS GET)
+  detail: authentication/saskpower-authentication.yml
+transport:
+  scheme: https
+  http_versions_observed: [HTTP/1.1]
+  hsts: 'max-age=31536000; includeSubDomains; preload'
+  cors: >-
+    No Access-Control-Allow-Origin returned on any feed, tested with an explicit
+    Origin header. Server-side consumption only.
+  security_headers_observed:
+  - X-Content-Type-Options: nosniff
+  - X-Frame-Options: SAMEORIGIN
+  - X-XSS-Protection: '1'
+methods:
+  read: GET
+  write: >-
+    None public. The Sitecore controllers that accept writes
+    (/api/sitecore/ReportAnOutage/*, /api/sitecore/StartStopTransfer/SubmitForm,
+    /api/sitecore/TreeTrim/SubmitTreeTrimmingForm,
+    /api/sitecore/CustomerPlannedMaintenance/SubmitForm) are POST-only web-form
+    handlers driven by the site's own JavaScript, backed by SaskPower's internal
+    integration layer. They are not documented, not versioned and not offered to
+    developers; they are recorded in errors/ for their envelope only, and are not
+    catalogued as APIs.
+idempotency:
+  supported: false
+  header: null
+  detail: >-
+    No idempotency key, no request-id echo and no retry contract is published or
+    observed. All public endpoints are read-only GETs, which are naturally
+    idempotent, but SaskPower makes no idempotency guarantee of any kind for the
+    write handlers.
+pagination:
+  supported: false
+  detail: >-
+    Every feed returns its complete collection in one response — 6 generation
+    types, 13 outages, 21 RSS items, 494 KML placemarks at capture time. No page,
+    offset, cursor, limit or Link header exists.
+filtering:
+  supported: partial
+  parameters:
+  - name: rid
+    endpoint: https://outagemap.saskpower.com/Files/GetKmlFile
+    detail: >-
+      The outage page's own markup appends ?rid=<RegionId> to the KML URL. RegionId
+      values come from the outage JSON feed. This is the only query parameter
+      observed anywhere on the estate; it is undocumented and its exact semantics
+      are not published.
+versioning:
+  scheme: none
+  current: null
+  in_url: false
+  in_header: false
+  detail: >-
+    No version appears in any path, header or payload. The only version-looking
+    token on the site is the ?v=07142026 cache-buster on static assets, which is a
+    build date for JavaScript and CSS, not an API version. Any of these endpoints
+    can change shape without notice; the Digital Terms and Conditions state
+    explicitly that "the information in this Website is subject to change without
+    notice".
+media_types:
+  - endpoint: /ignitionapi/PowerUseDashboard/GetPowerUseDashboardData
+    sent: application/json; charset=utf-8
+  - endpoint: /api/sitecore/Content/GetOutageJsonFile
+    sent: application/json; charset=utf-8
+  - endpoint: /ignitionapi/Content/GetRSSFeed
+    sent: text/xml; charset=utf-8
+    correct_type_would_be: application/rss+xml
+  - endpoint: https://outagemap.saskpower.com/Files/GetKmlFile
+    sent: text/xml
+    correct_type_would_be: application/vnd.google-earth.kml+xml
+  - endpoint: /api/sitecore/Content/GetSmartMeterKmlFile
+    sent: text/html; charset=utf-8
+    correct_type_would_be: application/vnd.google-earth.kml+xml
+    note: >-
+      Mislabelled — an XML body served as text/html. A strict client that trusts
+      Content-Type will mis-handle this feed.
+data_formats:
+  dates:
+    json: >-
+      Microsoft JSON date literals of the form /Date(<epoch-milliseconds>)/
+      (asOfDate, time, historicalPeakDemand.date). This is the legacy ASP.NET
+      serialiser format, not ISO 8601, and needs a regex to parse. Unset values
+      appear as /Date(-62135596800000)/, i.e. DateTime.MinValue.
+    display_strings: >-
+      The same payload also carries pre-formatted human strings for the same
+      values (SupplyDataText "Jul 25, 2026", HistoricalPeakDemandDate
+      "Dec 30, 2021"), and the outage feed's Alerts[].CreateDate is an
+      unqualified display string "Jul 27 10:27" with no year and no timezone.
+    timezone: >-
+      Never stated. Saskatchewan observes CST year-round (UTC-6, no daylight
+      saving), which is the only safe assumption but is not published.
+  units: >-
+    All power values are megawatts, as rendered on the public page. No unit is
+    declared in any payload.
+  identifiers:
+    OutageId: >-
+      Integer, shared with the planned-outage RSS guids, which are of the form
+      https://occ.saskpower.com/PlannedOutage/Edit/<id> — SaskPower's internal
+      Outage Control Centre, which does not resolve publicly.
+    RegionId: >-
+      Integer service-region key; joins the outage JSON to the outage-map KML and
+      to the ?rid= parameter.
+error_envelope:
+  detail: errors/saskpower-error-codes.yml
+  shape: >-
+    Sitecore controller envelope {errorCode, errorMessage, errorDetails, callId,
+    time} carried alongside the payload; errorCode 0 accompanies success. HTTP
+    status is 200 regardless. RFC 9457 problem+json is not used anywhere.
+rate_limiting:
+  published: false
+  headers_observed: []
+  detail: >-
+    No X-RateLimit-*, no Retry-After, no 429 observed. No quota is published. This
+    is not a promise of unlimited access — it is the absence of any statement.
+caching:
+  headers_observed:
+    Cache-Control: no-cache, no-store
+    Pragma: no-cache
+    Expires: '-1'
+  etag: false
+  last_modified: false
+  conditional_requests: false
+  detail: >-
+    Every feed is served no-store with no validator, so conditional requests are
+    impossible and every poll is a full transfer — 635 KB for the outage KML,
+    857 KB for the smart-meter KML. A polling client has no way to be polite.
+  update_cadence: >-
+    Not published. The power-use payload's asOfDate lagged the capture date at
+    capture time (SupplyDataText "Jul 25, 2026" fetched on 2026-07-27), so the
+    generation-mix data is not real-time despite the page presenting it as the
+    current supply picture.
+licensing:
+  terms_document: https://www.saskpower.com/-/media/SaskPower/Accounts-and-Services/Policy-Digital-TermsConditions.ashx
+  terms_version: February 2022
+  open_licence: false
+  detail: >-
+    This is the most consequential convention on the estate and it is easy to
+    miss. The data is anonymously reachable but it is not openly licensed. The
+    Digital Terms and Conditions that the "Where Your Power Comes From" page
+    itself points at grant only "a limited license to use, display or print short
+    extracts of the content for your personal non-commercial use only, provided
+    such content is not modified in any way. Any other use of the content is
+    prohibited. You shall not market, commercially exploit, reproduce, copy,
+    download, derivatize, modify or distribute any content, this Website or any
+    services, in whole or in part, without SaskPower's written permission." The
+    same section reserves the right "to revoke this limited license at any time
+    without notice and for whatever reason". Section 4 disclaims all warranty as
+    to "accuracy, validity, correctness, currency, timeliness, completeness,
+    reliability or adequacy". Anyone building on these feeds is doing so outside
+    the published licence unless they obtain written permission.
+  crawler_policy: >-
+    outagemap.saskpower.com/robots.txt is a blanket "# no web crawlers /
+    User-agent: * / Disallow: /". www.saskpower.com serves no robots.txt at all
+    (HTTP 404). See well-known/saskpower-well-known.yml.
+cross_links:
+  authentication: authentication/saskpower-authentication.yml
+  errors: errors/saskpower-error-codes.yml
+  lifecycle: lifecycle/saskpower-lifecycle.yml
+  conformance: conformance/saskpower-conformance.yml
+  examples: examples/saskpower-examples.yml
+  schemas:
+  - json-schema/saskpower-power-use-dashboard.schema.json
+  - json-schema/saskpower-outages.schema.json

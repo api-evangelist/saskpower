@@ -1,0 +1,47 @@
+generated: '2026-07-27'
+method: searched
+source: npm, PyPI, RubyGems, Maven Central, NuGet, pkg.go.dev, Packagist, crates.io, GitHub
+found: false
+note: >-
+  No first-party SaskPower client library exists in any public package registry,
+  which follows from there being no documented API to wrap. npm's registry search
+  for "saskpower" returns 0 objects; https://pypi.org/pypi/saskpower/json returns
+  404; the RubyGems search API returns an empty array; a GitHub code/repository
+  search for "saskpower" returns 4 unrelated student and hobby repositories, none
+  owned by SaskPower. SaskPower publishes no SDK page, no code samples and no
+  GitHub link anywhere on saskpower.com. No `Packages` or `SDKs` pointer is wired.
+packages: []
+registries_searched:
+- npm
+- pypi
+- rubygems
+- maven-central
+- nuget
+- pkg.go.dev
+- packagist
+- crates.io
+github_organization:
+  url: https://github.com/saskpower
+  exists: true
+  public_repos: 0
+  is_verified: false
+  description: null
+  created: '2017-08-03'
+  note: >-
+    The GitHub organization login "saskpower" is claimed (org id 30703064, created
+    2017-08-03, last updated 2023-06-01, 2 followers) but has 0 public
+    repositories, no name, no description, no company and no website set, and is
+    not a verified organization. Ownership by Saskatchewan Power Corporation could
+    not be confirmed from any SaskPower page, so no `GitHubOrganization` pointer is
+    wired — an empty, unverifiable org is not a developer surface.
+mobile_apps:
+  note: >-
+    SaskPower does ship consumer mobile apps (the SaskPower app on the Apple App
+    Store, id 1069464310, and on Google Play) that talk to the same internal
+    integration layer as MySaskPower. These are end-user applications, not client
+    libraries, and no public API contract is derived from them here.
+third_party_ecosystem_note: >-
+  Electricity Maps lists SaskPower's "Where Your Power Comes From" page as its
+  Saskatchewan data source — third parties already depend on this surface, but by
+  reading the rendered page rather than through any published client or contract.
+  No community SDK for SaskPower data was found in any registry.

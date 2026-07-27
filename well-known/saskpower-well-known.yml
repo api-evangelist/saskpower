@@ -1,0 +1,141 @@
+generated: '2026-07-27'
+method: probed
+source: live HTTP probes, 2026-07-27
+found: false
+note: >-
+  No /.well-known/ discovery surface exists on any SaskPower host. Every candidate
+  below was fetched and its body inspected; none returned a parseable discovery
+  document, so no raw files were saved and no `WellKnown` or `SecurityTxt` pointer
+  is wired. Reading the status codes needs care on this estate, because each host
+  fails differently: www.saskpower.com returns a genuine IIS `404 - File or
+  directory not found` for /.well-known/security.txt, /security.txt,
+  /.well-known/ai-plugin.json, /llms.txt and /robots.txt, but 302-redirects
+  /.well-known/openid-configuration, /.well-known/oauth-authorization-server,
+  /.well-known/oauth-protected-resource and /.well-known/api-catalog into the
+  Sitecore soft-404 handler at /404?item=<path>&user=extranet%5cAnonymous&site=SaskPower
+  (which then answers HTTP 200 with <title>404</title>). outagemap.saskpower.com
+  302s every /.well-known/ path. api.saskpower.com — the live TIBCO Cloud API
+  Management (Mashery) gateway — answers every path with HTTP 596
+  x-mashery-error-code ERR_596_SERVICE_NOT_FOUND. A 200 or a 302 on this estate is
+  therefore not evidence of a document; only the body is.
+hosts_probed:
+- www.saskpower.com
+- outagemap.saskpower.com
+- api.saskpower.com
+hosts_not_resolving:
+- developer.saskpower.com
+- developers.saskpower.com
+- docs.saskpower.com
+- data.saskpower.com
+- opendata.saskpower.com
+- api-info.saskpower.com
+- status.saskpower.com
+- occ.saskpower.com
+documents:
+- host: www.saskpower.com
+  path: /.well-known/security.txt
+  status: 404
+  body: IIS "404 - File or directory not found" HTML
+- host: www.saskpower.com
+  path: /security.txt
+  status: 404
+  body: IIS "404 - File or directory not found" HTML
+- host: www.saskpower.com
+  path: /.well-known/openid-configuration
+  status: 302
+  redirects_to: /404?item=%2f.well-known%2fopenid-configuration&user=extranet%5cAnonymous&site=SaskPower
+  body: Sitecore soft-404 HTML, not a discovery document
+- host: www.saskpower.com
+  path: /.well-known/oauth-authorization-server
+  status: 302
+  body: Sitecore soft-404 HTML
+- host: www.saskpower.com
+  path: /.well-known/oauth-protected-resource
+  status: 302
+  body: Sitecore soft-404 HTML
+- host: www.saskpower.com
+  path: /.well-known/api-catalog
+  status: 302
+  body: Sitecore soft-404 HTML
+- host: www.saskpower.com
+  path: /.well-known/ai-plugin.json
+  status: 404
+- host: www.saskpower.com
+  path: /llms.txt
+  status: 404
+- host: www.saskpower.com
+  path: /robots.txt
+  status: 404
+  body: >-
+    IIS 404. The corporate host publishes no robots.txt at all, so it states no
+    crawler or AI-agent policy.
+- host: outagemap.saskpower.com
+  path: /.well-known/security.txt
+  status: 302
+- host: outagemap.saskpower.com
+  path: /.well-known/openid-configuration
+  status: 302
+- host: outagemap.saskpower.com
+  path: /.well-known/oauth-authorization-server
+  status: 302
+- host: outagemap.saskpower.com
+  path: /.well-known/oauth-protected-resource
+  status: 302
+- host: outagemap.saskpower.com
+  path: /.well-known/api-catalog
+  status: 302
+- host: outagemap.saskpower.com
+  path: /.well-known/ai-plugin.json
+  status: 302
+- host: outagemap.saskpower.com
+  path: /llms.txt
+  status: 302
+- host: outagemap.saskpower.com
+  path: /robots.txt
+  status: 200
+  content_type: text/plain
+  bytes: 50
+  body: |
+    # no web crawlers
+    User-agent: *
+    Disallow: /
+  significance: >-
+    The only crawler policy SaskPower publishes anywhere, and it is a blanket
+    disallow — on the very host that serves the 635 KB outage-map KML feed. The
+    KML itself is served anonymously with no key and no referer check, so the
+    machine-readable data is technically open while the host's stated policy asks
+    automated clients to stay away. Recorded because it is the closest thing
+    SaskPower has to an agent-access statement, and it is a "no".
+- host: api.saskpower.com
+  path: /.well-known/security.txt
+  status: 596
+  body: Mashery ERR_596_SERVICE_NOT_FOUND
+- host: api.saskpower.com
+  path: /.well-known/openid-configuration
+  status: 596
+- host: api.saskpower.com
+  path: /.well-known/oauth-authorization-server
+  status: 596
+- host: api.saskpower.com
+  path: /.well-known/oauth-protected-resource
+  status: 596
+- host: api.saskpower.com
+  path: /.well-known/api-catalog
+  status: 596
+- host: api.saskpower.com
+  path: /.well-known/ai-plugin.json
+  status: 596
+- host: api.saskpower.com
+  path: /llms.txt
+  status: 596
+- host: api.saskpower.com
+  path: /robots.txt
+  status: 200
+  content_type: text/plain
+  bytes: 26
+  body: |
+    User-agent: *
+    Disallow:
+  significance: >-
+    The Mashery gateway serves a permissive robots.txt — the platform default,
+    not a SaskPower statement. No service is mapped behind it publicly.

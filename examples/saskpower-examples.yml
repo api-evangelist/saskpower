@@ -1,0 +1,100 @@
+generated: '2026-07-27'
+method: searched
+source: live anonymous HTTPS GETs against SaskPower's public endpoints, 2026-07-27
+note: >-
+  SaskPower publishes no OpenAPI, no schema and no reference documentation for any
+  of its data endpoints, so there are no provider-published examples to harvest.
+  What is captured here instead is the real thing: the actual response bodies
+  returned by each anonymous endpoint on 2026-07-27, saved verbatim. Nothing was
+  edited, reformatted or synthesised. Where a payload is very large (the two KML
+  documents are 620-840 KB and carry 494 Placemark elements each) an excerpt was
+  saved, truncated after the second Placemark and marked as an excerpt inside the
+  file itself; the JSON and RSS payloads are complete and unmodified.
+  These captures are the evidence base for json-schema/, conventions/ and errors/.
+examples:
+- file: saskpower-power-use-dashboard-response.json
+  api: saskpower:saskpower-power-use-dashboard-data
+  url: https://www.saskpower.com/ignitionapi/PowerUseDashboard/GetPowerUseDashboardData
+  method: GET
+  status: 200
+  content_type: application/json; charset=utf-8
+  bytes: 7916
+  complete: true
+  captured: '2026-07-27'
+  describes: >-
+    Provincial supply picture at capture time — generation 3124 MW, systemSupply
+    2876 MW, systemDemand 3031 MW, netInterchange -93 MW (exporting),
+    historicalPeakDemand 3910 MW set 2021-12-30, and six generationByType entries
+    (Hydro, Wind, Solar, Coal, Natural Gas, Other) each with
+    percentOfTotalGeneration, totalGenerationForType in MW, a greenEnergy flag and
+    the named powerUseFacilities contributing to it.
+  schema: json-schema/saskpower-power-use-dashboard.schema.json
+- file: saskpower-outages-response.json
+  api: saskpower:saskpower-live-outage-json-feed
+  url: https://www.saskpower.com/api/sitecore/Content/GetOutageJsonFile
+  method: GET
+  status: 200
+  content_type: application/json; charset=utf-8
+  bytes: 4256
+  complete: true
+  captured: '2026-07-27'
+  describes: >-
+    Current outage list keyed by region — Outages[] of {OutageId, RegionId,
+    Region, Planned ("Planned"|"Unplanned"), Alerts[{CreateDate, Message}]}.
+    RegionId joins to the Folder/name values in the outage map KML.
+  schema: json-schema/saskpower-outages.schema.json
+- file: saskpower-planned-outages-rss.xml
+  api: saskpower:saskpower-planned-outages-rss-feed
+  url: https://www.saskpower.com/ignitionapi/Content/GetRSSFeed
+  method: GET
+  status: 200
+  content_type: text/xml; charset=utf-8
+  bytes: 12345
+  complete: true
+  captured: '2026-07-27'
+  items: 21
+  describes: >-
+    RSS 2.0 channel "SaskPower Planned Power Outages", 21 items. Each item carries
+    a title of the form "<Area> Area: Planned Outage on <date>", a pubDate, a
+    non-permalink guid pointing at https://occ.saskpower.com/PlannedOutage/Edit/<id>
+    (SaskPower's internal Outage Control Centre, which does not resolve publicly),
+    and a CDATA description of HTML fragments labelled Towns/Urbans Affected,
+    Rurals Affected, Outage date/time, Outage Reason, Additional Comments and
+    Status. The channel's own atom:link self-reference points at
+    http://www.saskpower.com/feeds/outages.xml, which is dead.
+- file: saskpower-outage-map-excerpt.kml
+  api: saskpower:saskpower-outage-map-kml-feed
+  url: https://outagemap.saskpower.com/Files/GetKmlFile
+  method: GET
+  status: 200
+  content_type: text/xml
+  bytes_live: 635858
+  complete: false
+  excerpt: true
+  excerpt_note: truncated after 2 of 494 Placemark elements
+  captured: '2026-07-27'
+  describes: >-
+    KML 2.1 Document with four Style ids — unplanned-outage, planned-outage,
+    justresolved-outage, no-outage — and one Placemark per service region with
+    Polygon geometry. The same document is served from
+    https://www.saskpower.com/api/sitecore/Content/GetOutageKmlFile (identical
+    635,858 bytes at capture time), which is the path the outage page's own markup
+    uses; the outagemap.saskpower.com host additionally accepts a ?rid=<RegionId>
+    query parameter.
+- file: saskpower-smart-meter-map-excerpt.kml
+  api: saskpower:saskpower-smart-meter-installation-map-kml-feed
+  url: https://www.saskpower.com/api/sitecore/Content/GetSmartMeterKmlFile
+  method: GET
+  status: 200
+  content_type: text/html; charset=utf-8
+  bytes_live: 856869
+  complete: false
+  excerpt: true
+  excerpt_note: truncated after 2 of 494 Placemark elements
+  captured: '2026-07-27'
+  describes: >-
+    KML 2.1 Document with four deployment Style ids — in-progress, coming-up,
+    complete, unassigned — grouped into Folder elements named by numeric zone id,
+    each Placemark naming a service area ("Unity - Macklin Reward") with Polygon
+    geometry. Served with Content-Type text/html despite the XML body. This is
+    deployment-programme data, never a meter reading.

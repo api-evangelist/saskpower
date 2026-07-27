@@ -501,13 +501,76 @@ sources:
       Lists "Saskatchewan: SaskPower (daily avg)" pointing at the Where Your
       Power Comes From page — third-party dependence on an undocumented surface.
 
+enrichmentRounds:
+- date: '2026-07-27'
+  round: 2
+  method: search + probe + derive
+  newSurfacesFound:
+  - url: https://www.saskpower.com/api/sitecore/Content/GetOutageJsonFile
+    status: 200
+    note: >-
+      NEW. A fifth anonymous feed, missed in round 1: a live outage JSON list
+      (application/json, 4,256 bytes, 13 outages at capture) referenced from the
+      markup of the Outage Map and Updates page. Outages[] of {OutageId, RegionId,
+      Region, Planned, Alerts[{CreateDate, Message}]} inside the Sitecore envelope
+      {errorCode, errorMessage, errorDetails, callId, time}. Added to apis.yml.
+  - url: https://www.saskpower.com/api/sitecore/Content/GetOutageKmlFile
+    status: 200
+    note: >-
+      The outage-map KML mirrored on the primary host (identical 635,858 bytes to
+      the outagemap.saskpower.com copy). Recorded as an alternate path, not a
+      separate API. outagemap.saskpower.com/Files/GetKmlFile additionally accepts
+      ?rid=<RegionId>.
+  - url: https://www.saskpower.com/-/media/SaskPower/Accounts-and-Services/Policy-Digital-TermsConditions.ashx
+    status: 200
+    note: >-
+      The Digital Terms and Conditions PDF (February 2022) that the "Where Your
+      Power Comes From" page itself links as governing all information on the page.
+      Section 10 grants only "a limited license to use, display or print short
+      extracts ... for your personal non-commercial use only" and prohibits
+      commercial exploitation, reproduction, download, derivation and distribution
+      without written permission, revocable at any time without notice. The feeds
+      are anonymously reachable but not openly licensed — the single most
+      consequential finding of this round.
+  - url: https://outagemap.saskpower.com/robots.txt
+    status: 200
+    note: >-
+      "# no web crawlers / User-agent: * / Disallow: /" — a blanket disallow on
+      the host serving the outage KML. www.saskpower.com serves no robots.txt at
+      all (HTTP 404), so this is the only crawler policy SaskPower states anywhere.
+  - url: https://www.saskpower.com/api/sitecore/ReportAnOutage/GetOutageStatus
+    status: 200
+    note: >-
+      Anonymous call returns errorCode 599 with the raw upstream message "The Http
+      Server replied with a [500] status code-{ActivityName=SendHTTPRequest,
+      ProcessName=MainProcesses.GetOutageStatusDetails,
+      ModuleName=SaskPower_ESB_getOutageStatusDetails}" — HTTP 200 throughout.
+      Internal ESB process names leak to anonymous callers. Not catalogued as an
+      API (POST-only customer form handler); recorded in errors/.
+  - url: https://www.saskpower.com/Profile/My-Dashboard/My-Reports/Download-Data
+    status: 200
+    note: >-
+      A "Download Data" report page exists inside MySaskPower, behind the Azure AD
+      B2C auto-POST login form. No export format is advertised on any public page,
+      so no format is recorded. Still no third-party delegation of any kind.
+  stillAbsent:
+  - No OpenAPI/Swagger/GraphQL/AsyncAPI/MCP/Postman on any host (re-probed).
+  - No /.well-known/ document on www, outagemap or api hosts; no security.txt.
+  - No first-party package in npm, PyPI, RubyGems, Maven, NuGet, Go, Packagist or crates.io.
+  - >-
+    github.com/saskpower exists but has 0 public repos, is unverified and sets no
+    name, description or website — ownership unconfirmed, so no GitHubOrganization
+    pointer was wired.
+  - No status page, changelog, SLA, deprecation policy, rate-limit signalling, CORS or caching validators.
+
 findings:
   summary: >-
     SaskPower is the control case for the energy mandate question: nothing
     obliges it to publish anything, and it has published no consumer data API,
     no Green Button surface, no standard, no portal and no contract. What it has
-    is an accident. Four live endpoints — a JSON provincial supply feed, an RSS
-    planned-outage feed, and two KML map layers — answer anonymous GETs with real,
+    is an accident. Five live endpoints — a JSON provincial supply feed, a JSON
+    live-outage feed, an RSS planned-outage feed, and two KML map layers — answer
+    anonymous GETs with real,
     parseable grid data, because that is how the marketing website was built. No
     key, no signup, no documentation, no version, no rate limit, no promise. The
     only trace of a real API programme is archaeological: api.saskpower.com is a

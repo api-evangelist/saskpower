@@ -1,0 +1,90 @@
+generated: '2026-07-27'
+method: searched
+source: >-
+  saskpower.com site search + live probes, 2026-07-27; SaskPower Digital Terms and
+  Conditions (February 2022)
+note: >-
+  SaskPower publishes no API versioning policy, no deprecation policy, no sunset
+  header support, no SLA and no API status page. Nothing here is inferred from a
+  spec, because there is no spec. What can be documented is the observable
+  lifecycle of the endpoints themselves — including two that have already broken
+  without notice, which is the concrete evidence of what "no lifecycle policy"
+  means in practice for anyone depending on this data.
+versioning:
+  scheme: none
+  current: null
+  published_by_provider: false
+  docs: null
+  detail: >-
+    No version token appears in any path, header or payload. The endpoints are
+    Sitecore controller actions (/ignitionapi/*, /api/sitecore/*) whose shape is
+    tied to the website build, not to a contract. The ?v=07142026 token on static
+    assets is a JavaScript/CSS cache-buster, not an API version.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  detail: >-
+    No deprecation policy and no RFC 8594 Sunset/Deprecation headers. The Digital
+    Terms and Conditions instead reserve unilateral change: "the information in
+    this Website is subject to change without notice", and SaskPower "reserves the
+    right to revoke this limited license at any time without notice and for
+    whatever reason".
+  no_pointer_reason: >-
+    No `Deprecation` pointer is wired in apis.yml because no deprecation policy
+    exists to point at.
+observed_breakage:
+- surface: https://api-info.saskpower.com/
+  status: gone
+  detail: >-
+    The former TIBCO Cloud API Management (Mashery) developer portal for
+    SaskPower's Enterprise Service Bus — still indexed by search engines as
+    "Register for an Account - ESB - SaskPower" — is NXDOMAIN on both 8.8.8.8 and
+    1.1.1.1. The gateway it fronted, api.saskpower.com, is still live and still
+    answering (HTTP 596 ERR_596_SERVICE_NOT_FOUND on every public path), so
+    services exist behind it with no public door and no announcement that the door
+    closed.
+- surface: http://www.saskpower.com/feeds/outages.xml
+  status: dead
+  detail: >-
+    The planned-outage RSS channel's own atom:link self-reference. Returns a
+    SaskPower "500 Server Error" HTML page. The working location is
+    /ignitionapi/Content/GetRSSFeed, which the page's JavaScript opens. A feed
+    that misreports its own address has already broken every subscriber that
+    followed the canonical link.
+- surface: https://www.saskpower.com/our-power-future/creating-a-cleaner-power-future/smart-meters/understanding-your-smart-meter-data
+  status: moved
+  detail: >-
+    Returns the Sitecore soft-404 (HTTP 200, <title>404</title>). The path search
+    engines still index for smart-meter data has moved with no redirect.
+sla:
+  url: null
+  uptime_target: null
+  detail: >-
+    No SLA. The Digital Terms and Conditions provide the service "solely on an 'as
+    is' and 'as available' basis", disclaim any warranty as to "accuracy,
+    validity, correctness, currency, timeliness, completeness, reliability or
+    adequacy", and state "Do not assume that the Website will be error-free or
+    that the Website will be operated without interruption."
+status_page:
+  url: null
+  detail: >-
+    No API or platform status page exists. status.saskpower.com does not resolve.
+    The public outage map (https://www.saskpower.com/outages/power-outages/outage-updates)
+    reports the status of the electricity grid, not of these endpoints, and is not
+    recorded as a status page. No `StatusPage` pointer is wired.
+support:
+  developer_channel: none
+  general: https://www.saskpower.com/contact-us
+  detail: >-
+    There is no developer contact, no API mailbox and no forum. General customer
+    contact is the only route, and it is not staffed for API questions.
+change_communication:
+  changelog: none
+  release_notes: none
+  blog: https://www.saskpower.com/about-us/our-company/blog
+  news: https://www.saskpower.com/about-us/media-information/news-releases
+  detail: >-
+    Neither the blog nor the news releases have ever announced a data-feed change;
+    they are corporate communications. A consumer of these feeds has no channel
+    that would tell them a payload changed. No `ChangeLog` pointer is wired.
+deprecated_operations: []

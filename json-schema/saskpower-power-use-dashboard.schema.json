@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/saskpower/refs/heads/main/json-schema/saskpower-power-use-dashboard.schema.json",
+  "title": "SaskPower Power Use Dashboard Data",
+  "description": "Schema of the response returned by GET https://www.saskpower.com/ignitionapi/PowerUseDashboard/GetPowerUseDashboardData. DERIVED by API Evangelist from the verbatim live response captured 2026-07-27 (examples/saskpower-power-use-dashboard-response.json, HTTP 200, application/json, 7,916 bytes). SaskPower publishes no schema, no reference and no version for this endpoint; it is a Sitecore controller action behind the public 'Where Your Power Comes From' page. Field names, types and nesting below are exactly as observed. Fields observed only as null in the capture are typed as nullable with no further constraint rather than guessed at.",
+  "x-provenance": {
+    "generated": "2026-07-27",
+    "method": "derived",
+    "source": "examples/saskpower-power-use-dashboard-response.json",
+    "authoritative": false,
+    "note": "API Evangelist derivation from one observed response. Not published or endorsed by SaskPower."
+  },
+  "type": "object",
+  "properties": {
+    "PowerCacheData": {
+      "type": ["object", "null"],
+      "description": "The supply and demand snapshot. All power values are megawatts (MW) as rendered on the public page; no unit is declared in the payload itself.",
+      "properties": {
+        "callId": { "type": ["string", "null"], "description": "GUID. Observed as the all-zero GUID." },
+        "time": { "type": ["string", "null"], "description": "Microsoft JSON date literal of the form /Date(<epoch-milliseconds>)/. Observed as /Date(-62135596800000)/, i.e. DateTime.MinValue — unset." },
+        "messageHeader": { "description": "Observed null.", "type": ["object", "string", "null"] },
+        "asOfDate": { "type": ["string", "null"], "description": "Microsoft JSON date literal /Date(<epoch-milliseconds>)/ giving the timestamp the snapshot is valid for." },
+        "generation": { "type": ["integer", "null"], "description": "Total provincial generation, MW." },
+        "netInterchange": { "type": ["integer", "null"], "description": "Net interchange, MW. Negative when Saskatchewan is exporting." },
+        "systemSupply": { "type": ["integer", "null"], "description": "System supply, MW." },
+        "systemDemand": { "type": ["integer", "null"], "description": "System demand, MW." },
+        "historicalPeakDemand": {
+          "type": ["object", "null"],
+          "properties": {
+            "demand": { "type": ["integer", "null"], "description": "All-time peak provincial demand, MW." },
+            "date": { "type": ["string", "null"], "description": "Microsoft JSON date literal for the peak." }
+          },
+          "additionalProperties": true
+        },
+        "generationByType": {
+          "type": ["array", "null"],
+          "description": "One entry per fuel type. Six entries observed: Hydro, Wind, Solar, Coal, Natural Gas, Other.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": ["string", "null"], "description": "Fuel type label. Observed values: Hydro, Wind, Solar, Coal, Natural Gas, Other." },
+              "percentOfTotalGeneration": { "type": ["number", "null"], "description": "Share of total generation, percent (integer in the capture)." },
+              "totalGenerationForType": { "type": ["number", "null"], "description": "Generation for this fuel type, MW." },
+              "greenEnergy": { "type": ["boolean", "null"], "description": "SaskPower's own green/non-green classification of the fuel type." },
+              "powerUseFacilities": {
+                "type": ["array", "null"],
+                "description": "Named stations contributing to this fuel type.",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": ["string", "null"], "description": "Station name, e.g. 'Coteau Creek Hydroelectric Station'." },
+                    "URL": { "type": ["string", "null"], "format": "uri", "description": "Link to the station's page under /Our-Power-Future/Our-Electricity/Electrical-System/System-Map/." }
+                  },
+                  "additionalProperties": true
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "PowerUsageDisplays": { "description": "Observed null.", "type": ["array", "object", "null"] },
+    "SupplyDataText": { "type": ["string", "null"], "description": "Human-formatted date the supply data is as of, e.g. 'Jul 25, 2026'. This is what the public page renders." },
+    "HistoricalPeakDemandDate": { "type": ["string", "null"], "description": "Human-formatted date of the historical peak, e.g. 'Dec 30, 2021'." },
+    "ErrorMessage": { "type": ["string", "null"], "description": "Observed null on success." },
+    "ErrorIcon": { "type": ["string", "null"], "description": "Observed null on success." },
+    "AjaxURL": { "type": ["string", "null"] },
+    "ContextPage": { "type": ["object", "string", "null"] },
+    "Id": { "type": ["string", "null"], "description": "Sitecore item GUID. Observed as the all-zero GUID." },
+    "Language": { "type": ["string", "null"] },
+    "Uri": { "type": ["string", "null"] },
+    "DisplayName": { "type": ["string", "null"] },
+    "Version": { "type": ["integer", "null"] },
+    "Path": { "type": ["string", "null"] },
+    "Name": { "type": ["string", "null"] },
+    "Url": { "type": ["string", "null"] },
+    "TemplateId": { "type": ["string", "null"], "description": "Sitecore template GUID. Observed as the all-zero GUID." }
+  },
+  "additionalProperties": true
+}

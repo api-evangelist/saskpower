@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+  <Document>
+    <Style id="unplanned-outage">
+      <LineStyle>
+        <width>1</width>
+        <color>a0808080</color>
+      </LineStyle>
+      <PolyStyle>
+        <color>802E26C4</color>
+      </PolyStyle>
+    </Style>
+    <Style id="planned-outage">
+      <LineStyle>
+        <width>1</width>
+        <color>a0808080</color>
+      </LineStyle>
+      <PolyStyle>
+        <color>702277E3</color>
+      </PolyStyle>
+    </Style>
+    <Style id="justresolved-outage">
+      <LineStyle>
+        <width>1</width>
+        <color>a0808080</color>
+      </LineStyle>
+      <PolyStyle>
+        <color>0000DFA5</color>
+      </PolyStyle>
+    </Style>
+    <Style id="no-outage">
+      <LineStyle>
+        <width>1</width>
+        <color>a0808080</color>
+      </LineStyle>
+      <PolyStyle>
+        <color>0000DFA5</color>
+      </PolyStyle>
+    </Style>
+    <Folder>
+      <name>1</name>
+      <Placemark>
+        <name>Assiniboia - Assiniboia</name>
+        <styleUrl>#no-outage</styleUrl>
+        <Polygon>
+          <outerBoundaryIs>
+            <LinearRing>
+              <coordinates>-106.0884648167697,49.61388359104421,0 -106.0870727790147,49.55127349157139,0 -105.8682992157274,49.55312194473504,0 -105.8694080164388,49.61555702713332,0 -105.8708474258461,49.6962842465785,0 -106.0902627486583,49.69442647263446,0 -106.0884648167697,49.61388359104421,0</coordinates>
+            </LinearRing>
+          </outerBoundaryIs>
+        </Polygon>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>2</name>
+      <Placemark>
+        <name>Assiniboia - Coronach Willow Bunch</name>
+        <styleUrl>#no-outage</styleUrl>
+        <Polygon>
+          <outerBoundaryIs>
+            <LinearRing>
+              <coordinates>
+				-105.2310922223686,48.99844036618609,0 -104.7952351551322,48.99817668473769,0 -104.7967271899736,48.99963787378169,0 -104.9128298400335,49.11299346191777,0 -104.9175561699497,49.14859942898625,0 -104.9319039675069,49.16222148110954,0 -104.9414472344055,49.19364041530344,0 -104.9542157253538,49.20830573660098,0 -104.9669966605406,49.2145929427134,0 -105.0884764370373,49.21561091354291,0 -105.2229743043096,49.26673813115197,0 -105.2797410820217,49.30006873306444,0 -105.3240573777044,49.35427884199616,0 -105.3149113844835,49.38170496390258,0 -105.3551112418553,49.3962478639603,0 -105.3696280914332,49.40667319593261,0 -105.3966877682411,49.43337424342656,0 -105.3971257995301,49.43380617705606,0 -105.4261964499723,49.45359720869505,0 -105.4615599704321,49.45660279552551,0 -105.3729908237754,49.52338818918497,0 -105.3813353132098,49.52634493227666,0 -105.3986922192827,49.54502073225051,0 -105.3872466201396,49.58164365763387,0 -105.3872498025383,49.58164373693371,0 -105.3970889224009,49.58148735123836,0 -105.3970959789319,49.61775455713848,0 -105.7684971970938,49.61618842546982,0 -105.7459753814685,48.99888672541798,0 -105.2310922223686,48.99844036618609,0
+			  </coordinates>
+            </LinearRing>
+          </outerBoundaryIs>
+        </Polygon>
+      </Placemark>
+<!-- EXCERPT: truncated by API Evangelist after 2 of 494 Placemark elements. The live document is the full response from https://outagemap.saskpower.com/Files/GetKmlFile (captured 2026-07-27). Closing tags below were added to keep this excerpt well-formed XML. -->
+</Folder>
+</Document>
+</kml>

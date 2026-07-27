@@ -1,0 +1,124 @@
+generated: '2026-07-27'
+method: derived
+source: >-
+  examples/ captures + live probes, 2026-07-27; cross-read against the Green Button
+  Alliance Canadian Initiatives page
+note: >-
+  SaskPower makes no conformance claim of any kind — no standard, specification or
+  certification is named anywhere on saskpower.com. Every entry below is therefore
+  either observed on the wire or a recorded negative. The two positives are
+  syntactic (RSS 2.0, KML 2.1) and incidental: they come from the file formats the
+  website already used, not from a decision to conform to anything. No `Compliance`
+  pointer is wired, because no compliance programme, certification or trust centre
+  is published (probe-security-programs.py: vdp=none trust=none).
+standards:
+- id: rss-2.0
+  conforms: true
+  evidence: >-
+    GET https://www.saskpower.com/ignitionapi/Content/GetRSSFeed returns a valid
+    <rss version="2.0"> document with atom:link, channel title/link/description and
+    21 <item> elements each carrying title, pubDate, guid and a CDATA description.
+    Parsed 2026-07-27.
+  caveat: >-
+    Served as text/xml rather than application/rss+xml, and the channel's own
+    atom:link self-reference points at a dead URL.
+- id: kml-2.1
+  conforms: true
+  evidence: >-
+    Both map feeds return <kml xmlns="http://earth.google.com/kml/2.1"> documents
+    with Document/Style/Folder/Placemark/Polygon structure. Parsed 2026-07-27.
+  caveat: >-
+    The smart-meter KML is served with Content-Type text/html. Neither declares
+    the OGC KML 2.2 namespace; both use the older Google 2.1 namespace.
+- id: json
+  conforms: true
+  evidence: >-
+    Two endpoints return well-formed application/json. Dates inside them are
+    Microsoft /Date(<epoch-ms>)/ literals rather than ISO 8601, so the documents
+    are valid JSON but not interoperable date-wise.
+- id: openapi
+  conforms: false
+  evidence: >-
+    No OpenAPI or Swagger document exists. /openapi.json and /swagger.json return
+    404 on www.saskpower.com and HTTP 596 on api.saskpower.com; /api-docs, /docs,
+    /developers, /developer, /api, /apis, /data, /open-data and /opendata all
+    resolve to the Sitecore soft-404.
+- id: asyncapi
+  conforms: false
+  evidence: No event, streaming or webhook surface of any kind is published.
+- id: graphql
+  conforms: false
+  evidence: No /graphql endpoint on any resolving SaskPower host.
+- id: mcp
+  conforms: false
+  evidence: No MCP server, no /mcp endpoint, no tools/list surface.
+- id: green-button-espi
+  conforms: false
+  evidence: >-
+    No Green Button Download My Data, no Connect My Data, no ESPI function blocks,
+    no NAESB REQ.21 reference anywhere on saskpower.com
+    (https://www.saskpower.com/green-button resolves to the soft-404). The Green
+    Button Alliance Canadian Initiatives page states it has no information about
+    any Green Button deployment in Saskatchewan.
+  mandate: >-
+    None applies. Ontario's O. Reg. 633/21 binds Ontario distributors; Nova Scotia
+    has a separate requirement on Nova Scotia Power; neither reaches a
+    Saskatchewan Crown corporation, and Canada has no national energy consumer
+    data right.
+- id: iec-cim-61968-61970
+  conforms: false
+  evidence: No CIM reference; the payload shapes are ad-hoc Sitecore view models.
+- id: ieee-2030.5
+  conforms: false
+  evidence: No reference anywhere on the site.
+- id: openadr
+  conforms: false
+  evidence: No demand-response API or OpenADR reference.
+- id: ocpp-ocpi
+  conforms: false
+  evidence: >-
+    SaskPower publishes EV resources pages but no charging-network API and no
+    OCPP/OCPI reference.
+- id: oauth2
+  conforms: false
+  evidence: >-
+    No OAuth 2.0 surface is offered to developers. No authorization endpoint,
+    token endpoint or client registration is published; /.well-known/oauth-*
+    return the soft-404. The customer portal's Azure AD B2C login is a human
+    browser flow with no third-party delegation.
+- id: oidc
+  conforms: partial
+  evidence: >-
+    OpenID Connect is used for humans only — Azure AD B2C for MySaskPower
+    customers and Microsoft Entra ID (tenant dbe9bd7b-4b3a-44b3-b358-e61ff34d58b2)
+    for partner.saskpower.com. Neither publishes a discovery document on a
+    SaskPower host and neither is reachable as an API authorization surface.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    Errors are carried in a proprietary {errorCode, errorMessage, errorDetails,
+    callId, time} envelope at HTTP 200. See errors/saskpower-error-codes.yml.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: >-
+    No security.txt on any host. See well-known/saskpower-well-known.yml.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: No Sunset or Deprecation headers; no deprecation policy exists.
+- id: cors
+  conforms: false
+  evidence: >-
+    No Access-Control-Allow-Origin returned on any feed, tested with an explicit
+    Origin header.
+- id: json-api
+  conforms: false
+- id: odata
+  conforms: false
+- id: scim
+  conforms: false
+- id: fhir
+  conforms: false
+- id: fapi
+  conforms: false
+certifications_published: []
+compliance_programme_published: false

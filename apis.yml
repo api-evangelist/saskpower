@@ -26,8 +26,9 @@ description: >-
   publishes wide open, anonymously, with no key, no signup and no rate limit —
   is grid and system data: a live JSON feed of provincial system demand,
   generation by fuel type, net interchange and historical peak demand behind the
-  public "Where Your Power Comes From" page, an RSS feed of planned outages, and
-  two KML feeds driving the outage and smart-meter installation maps. None of it
+  public "Where Your Power Comes From" page, a second JSON feed listing current
+  outages by service region, an RSS feed of planned outages, and two KML feeds
+  driving the outage and smart-meter installation maps. None of it
   is documented as an API, versioned, or covered by a developer program: the
   former SaskPower ESB developer portal at api-info.saskpower.com no longer
   resolves, and api.saskpower.com is a live TIBCO/Mashery gateway that answers
@@ -46,7 +47,7 @@ accessModel:
   - probes
   generated: '2026-07-27'
   method: manual
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+image: https://www.saskpower.com/-/media/saskpower/logo.png?la=en&h=92&w=344&hash=2F4CBFD7B403E69A4530EB778FAD7A1E
 tags:
 - Energy
 - Canada
@@ -92,6 +93,15 @@ apis:
     url: https://www.saskpower.com/our-power-future/our-electricity/electrical-system/where-your-power-comes-from
   - type: TermsOfService
     url: https://www.saskpower.com/terms
+  - type: TermsOfService
+    name: SaskPower Digital Terms and Conditions (February 2022)
+    url: https://www.saskpower.com/-/media/SaskPower/Accounts-and-Services/Policy-Digital-TermsConditions.ashx
+  - type: JSONSchema
+    name: Power Use Dashboard response schema (API Evangelist derived)
+    url: json-schema/saskpower-power-use-dashboard.schema.json
+  - type: Examples
+    name: Verbatim live response captured 2026-07-27
+    url: examples/saskpower-power-use-dashboard-response.json
 - aid: saskpower:saskpower-planned-outages-rss-feed
   name: SaskPower Planned Outages RSS Feed
   description: >-
@@ -118,6 +128,48 @@ apis:
     url: https://www.saskpower.com/outages/power-outages/outages-planned-for-necessary-maintenance
   - type: TermsOfService
     url: https://www.saskpower.com/terms
+  - type: Examples
+    name: Verbatim live RSS capture 2026-07-27
+    url: examples/saskpower-planned-outages-rss.xml
+- aid: saskpower:saskpower-live-outage-json-feed
+  name: SaskPower Live Outage JSON Feed
+  description: >-
+    The undocumented JSON endpoint behind SaskPower's public outage map, found in
+    the markup of the Outage Map and Updates page alongside the KML reference and
+    fetched anonymously with no key, no signup and no referer check. A single GET
+    returns Outages[] — one entry per affected service region — each carrying an
+    integer OutageId (the same identifier space as the planned-outage RSS guids),
+    an integer RegionId that joins to the outage-map KML regions and to that
+    feed's ?rid= parameter, a human-readable Region name, a Planned field valued
+    "Planned" or "Unplanned", and an Alerts array of operator-written
+    {CreateDate, Message} notices. It is wrapped in the shared Sitecore controller
+    envelope {errorCode, errorMessage, errorDetails, callId, time}, where
+    errorCode 0 means success and the HTTP status stays 200 even on failure.
+    Verified 2026-07-27 as HTTP 200, application/json, 4,256 bytes, valid JSON,
+    13 outages. This is the closest thing SaskPower has to a live grid-events
+    API, and it is documented nowhere.
+  humanURL: https://www.saskpower.com/outages/power-outages/outage-updates
+  baseURL: https://www.saskpower.com/api/sitecore/Content/GetOutageJsonFile
+  tags:
+  - Outages
+  - Grid
+  - Open Data
+  - Undocumented
+  - Real Time
+  properties:
+  - type: Documentation
+    url: https://www.saskpower.com/outages/power-outages/outage-updates
+  - type: TermsOfService
+    url: https://www.saskpower.com/terms
+  - type: TermsOfService
+    name: SaskPower Digital Terms and Conditions (February 2022)
+    url: https://www.saskpower.com/-/media/SaskPower/Accounts-and-Services/Policy-Digital-TermsConditions.ashx
+  - type: JSONSchema
+    name: Outage feed response schema (API Evangelist derived)
+    url: json-schema/saskpower-outages.schema.json
+  - type: Examples
+    name: Verbatim live response captured 2026-07-27
+    url: examples/saskpower-outages-response.json
 - aid: saskpower:saskpower-outage-map-kml-feed
   name: SaskPower Outage Map KML Feed
   description: >-
@@ -142,6 +194,9 @@ apis:
     url: https://www.saskpower.com/outages/power-outages/outage-updates
   - type: TermsOfService
     url: https://www.saskpower.com/terms
+  - type: Examples
+    name: KML excerpt captured 2026-07-27
+    url: examples/saskpower-outage-map-excerpt.kml
 - aid: saskpower:saskpower-smart-meter-installation-map-kml-feed
   name: SaskPower Smart Meter Installation Map KML Feed
   description: >-
@@ -167,15 +222,61 @@ apis:
     url: https://www.saskpower.com/our-power-future/investing-in-a-reliable-power-grid/smart-meters/meter-installation-map
   - type: TermsOfService
     url: https://www.saskpower.com/terms
+  - type: Examples
+    name: KML excerpt captured 2026-07-27
+    url: examples/saskpower-smart-meter-map-excerpt.kml
 common:
+- type: DomainSecurity
+  url: security/saskpower-domain-security.yml
+- type: Authentication
+  name: SaskPower authentication profile (probed)
+  url: authentication/saskpower-authentication.yml
+- type: Conventions
+  name: SaskPower API conventions, data formats and licensing
+  url: conventions/saskpower-conventions.yml
+- type: ErrorCatalog
+  name: SaskPower error codes and response envelopes
+  url: errors/saskpower-error-codes.yml
+- type: Lifecycle
+  name: SaskPower lifecycle, versioning and observed breakage
+  url: lifecycle/saskpower-lifecycle.yml
+- type: Conformance
+  name: SaskPower standards conformance
+  url: conformance/saskpower-conformance.yml
+- type: Examples
+  name: Verbatim captured responses from every public endpoint
+  url: examples/saskpower-examples.yml
+- type: JSONSchema
+  name: Schemas derived from captured responses
+  url: json-schema/saskpower-power-use-dashboard.schema.json
+- type: LLMsTxt
+  name: llms.txt generated by API Evangelist
+  url: llms/saskpower-llms.txt
 - type: Website
   url: https://www.saskpower.com/
 - type: About
   url: https://www.saskpower.com/about-us
 - type: TermsOfService
   url: https://www.saskpower.com/terms
+- type: TermsOfService
+  name: SaskPower Digital Terms and Conditions (February 2022)
+  url: https://www.saskpower.com/-/media/SaskPower/Accounts-and-Services/Policy-Digital-TermsConditions.ashx
 - type: Privacy
   url: https://www.saskpower.com/footer/how-we-do-business/privacy
+- type: PrivacyPolicy
+  url: https://www.saskpower.com/footer/how-we-do-business/privacy
+- type: Support
+  name: Contact Us
+  url: https://www.saskpower.com/contact-us
+- type: Pricing
+  name: Power Supply Rates
+  url: https://www.saskpower.com/accounts/power-rates/power-supply-rates
+- type: Login
+  name: MySaskPower customer portal (Azure AD B2C)
+  url: https://www.saskpower.com/profile/my-dashboard
+- type: SignUp
+  name: Access Your MySaskPower Account
+  url: https://www.saskpower.com/accounts/mysaskpower/your-account/access-your-mysaskpower-account
 - type: Blog
   url: https://www.saskpower.com/about-us/Our-Company/Blog
 - type: NewsReleases
