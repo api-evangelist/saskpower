@@ -1,0 +1,524 @@
+aid: saskpower
+name: SaskPower
+review:
+  question: >-
+    Does SaskPower expose a consumer energy data API under any mandate, and does
+    it publish open grid or market data?
+  answer: >-
+    No consumer data API and no mandate that would require one — Saskatchewan
+    has no Green Button regulation and Canada has no national energy consumer
+    data right — but a genuinely open, anonymous, entirely undocumented set of
+    grid and outage data feeds does exist. This is the mirror image of the
+    Ontario utilities: nothing compelled, nothing consented, yet more raw system
+    data reachable without credentials.
+  date: '2026-07-27'
+  reviewer: API Evangelist
+  homeMarket: Canada
+  tier: utility-retailer
+
+organization:
+  legalName: Saskatchewan Power Corporation
+  status: >-
+    Provincial Crown corporation, owned by the Government of Saskatchewan
+    through Crown Investments Corporation. Established 1929 as the Saskatchewan
+    Power Commission; continued as the Saskatchewan Power Corporation in 1949
+    under The Power Corporation Act. Governed by a board appointed by the
+    Lieutenant Governor and reporting to a Minister Responsible.
+  positionInValueChain: >-
+    Vertically integrated monopoly — generation, transmission, distribution and
+    retail in one entity. Saskatchewan has no competitive wholesale market
+    operator equivalent to Ontario's IESO or Alberta's AESO, so there is no
+    third-party market operator publishing system data on SaskPower's behalf and
+    no market-facing API layer.
+  scale: >-
+    More than 550,000 customers across approximately 652,000 km2, more than
+    160,000 km of power lines, roughly 5,437 MW of generating capacity across 31
+    facilities (coal, natural gas, hydro, wind, solar), 59 switching stations and
+    200 distribution stations, with interconnections to Manitoba, Alberta (HVDC)
+    and North Dakota. Figures per the SaskPower entry on Wikipedia, cross-read
+    against SaskPower's own system pages; SaskPower's /about-us page itself
+    carries no company facts.
+
+mandate:
+  regime: none
+  status: none
+  instrument: >-
+    None applies. Saskatchewan has enacted no Green Button regulation. Ontario's
+    O. Reg. 633/21 (Energy Data, under the Electricity Act, 1998) binds Ontario
+    local distribution companies only; Nova Scotia has a separate Green Button
+    requirement on Nova Scotia Power. Neither reaches a Saskatchewan Crown
+    corporation. Canada has no national energy consumer data right — the federal
+    Consumer-Driven Banking framework covers financial data only — and Australia's
+    Consumer Data Right (energy) has no Canadian analogue.
+  appliesToThisOrganization: false
+  appliesToThisOrganizationEvidence: >-
+    The Green Button Alliance Canadian Initiatives page (HTTP 200, fetched
+    2026-07-27) describes the Ontario regulation and the Nova Scotia Power
+    requirement and then states explicitly: "We currently have no information
+    about Green Button deployments in Manitoba, New Brunswick, Newfoundland and
+    Labrador, Prince Edward Island, Quebec, or Saskatchewan." SaskPower is not
+    named anywhere on that page. Independently, a site-wide search of
+    saskpower.com returned no Green Button page: https://www.saskpower.com/green-button
+    resolves to the site's soft-404 (HTTP 200 with <title>404</title>), and no
+    smart meter, billing, or MySaskPower page mentions Green Button, ESPI, DMD,
+    CMD, or third-party data sharing.
+  whatWasVerified:
+    - >-
+      No Green Button surface of any kind. No DMD download, no CMD authorization
+      endpoint, no third-party vendor onboarding form, no ESPI function-block
+      scopes, no data-custodian paths.
+    - >-
+      No CDR-style accreditation regime exists in Canada for energy, so there is
+      no register to check and no conformant base URI to look for.
+  claimVersusImplementationNote: >-
+    There is no compliance claim to test here. SaskPower makes no assertion of
+    conformance to any energy data standard, so this record is "none" on both
+    axes rather than the more common "mandated but not implemented." The
+    interesting finding is the opposite direction: an organization with zero
+    obligation nonetheless leaves real system data anonymously readable, purely
+    as a side effect of how its public website is built.
+
+dataStandard:
+  name: no standard reference found
+  detail: >-
+    No Green Button / ESPI, no NAESB REQ.21, no CDR Consumer Data Standards, no
+    OCPP or OCPI, no OpenADR, no IEEE 2030.5, and no IEC CIM 61968/61970
+    reference appears anywhere on saskpower.com. The formats actually served are
+    generic and proprietary in shape: an ad-hoc JSON object from a Sitecore
+    controller, RSS 2.0 for planned outages, and KML 2.1 for the two map layers.
+  payloadFormats:
+    - application/json (Power Use Dashboard — proprietary shape)
+    - RSS 2.0 XML (planned outages)
+    - KML 2.1 XML (outage map, smart meter installation map)
+
+consumerVersusMarketData:
+  consumer_data_api: false
+  consumerDataNote: >-
+    A third party cannot obtain an individual SaskPower customer's usage or
+    billing data through any documented API. Smart meter usage is presented only
+    inside MySaskPower to the account holder. https://www.saskpower.com/Profile/My-Dashboard
+    returned HTTP 200 but the body is a 486-byte auto-submitting form POSTing to
+    /identity/externallogin?authenticationType=SaskPower.Azure.B2C — a Sitecore
+    Identity handoff to Azure AD B2C. That is a human web login, not a delegated
+    authorization surface: there is no consent screen for a third party, no
+    client registration, no scopes, and no token endpoint offered to developers.
+    No export format is advertised on the smart meter data pages.
+  market_data_open: true
+  marketDataNote: >-
+    Recorded true, with the qualification stated plainly: the data is genuinely
+    open and anonymous but entirely undocumented. Four live feeds were fetched
+    with no credentials, no key and no signup on 2026-07-27, and all four parse:
+    (1) https://www.saskpower.com/ignitionapi/PowerUseDashboard/GetPowerUseDashboardData
+    — HTTP 200, application/json, 7,917 bytes, valid JSON, carrying systemDemand,
+    systemSupply, generation, netInterchange, historicalPeakDemand, and a
+    generationByType array with per-fuel MW, percentage and named facilities;
+    (2) https://www.saskpower.com/ignitionapi/Content/GetRSSFeed — HTTP 200,
+    text/xml, 13,058 bytes, valid RSS 2.0 of planned outages, opened by a visible
+    "RSS feed" link on the planned-outage page; (3)
+    https://outagemap.saskpower.com/Files/GetKmlFile — HTTP 200, text/xml,
+    633,252 bytes, valid KML, referenced directly in the outage page markup;
+    (4) https://www.saskpower.com/api/sitecore/Content/GetSmartMeterKmlFile —
+    HTTP 200, 856,869 bytes, valid KML, referenced from the site's own
+    SP.scripts.js. Electricity Maps lists SaskPower's "Where Your Power Comes
+    From" page (daily average) as its Saskatchewan data source, confirming that
+    third parties already depend on this surface — by scraping the page rather
+    than by any published contract.
+  theSplit: >-
+    SaskPower is the inverse of Hydro One. Hydro One is compelled by regulation
+    and has a real, standards-based, consent-gated consumer data API that no
+    developer can discover, alongside zero open grid data. SaskPower is compelled
+    by nothing, has no consumer data API at all, and yet leaves provincial
+    generation mix, system demand, interchange and outage geometry sitting on
+    open anonymous endpoints. Neither utility runs a developer program. The
+    mandate produced an API without a developer surface; the absence of a mandate
+    produced a developer surface without an API.
+
+accessGate:
+  gate: none-published
+  whatADeveloperMustDo:
+    - >-
+      For the open data feeds: nothing. Issue an anonymous HTTPS GET. No account,
+      no key, no header, no registration, no published rate limit. This is not a
+      self-serve programme — there is nothing to sign up for — which is why the
+      gate is recorded as none-published rather than self-serve.
+    - >-
+      For an individual customer's usage data: become that customer. Create a
+      MySaskPower account and authenticate through Azure AD B2C. There is no path
+      by which a third party can be authorized to read another person's data.
+    - >-
+      For anything SaskPower actually manages as an API: there is no published
+      route. The historic developer portal at https://api-info.saskpower.com/
+      (indexed by search engines as "Register for an Account - ESB - SaskPower",
+      a TIBCO Cloud API Management / Mashery portal for SaskPower's Enterprise
+      Service Bus) no longer resolves — NXDOMAIN on 8.8.8.8 and 1.1.1.1 as of
+      2026-07-27, connection failures on every path probed. The gateway itself is
+      still live: api.saskpower.com resolves via CNAME to saskpower1.api.mashery.com
+      and every public path returns HTTP 596 with x-mashery-error-code
+      ERR_596_SERVICE_NOT_FOUND from "Server: Mashery Proxy". Real services exist
+      behind it; none are mapped to a public path and none are documented.
+    - >-
+      partner.saskpower.com resolves and 302s to login.microsoftonline.com
+      (tenant dbe9bd7b-4b3a-44b3-b358-e61ff34d58b2, OpenID Connect,
+      response_type=code id_token, scope=openid profile) — a partner portal
+      behind corporate SSO, not a developer portal.
+  selfServe: false
+  developerPortalConfirmed: false
+  notAnAccreditationRegime: >-
+    Not applicable. With no mandate there is no accreditation, no register, and
+    no regulator-defined data recipient status anywhere in Saskatchewan.
+
+authModel:
+  openDataFeeds: >-
+    None. Anonymous unauthenticated HTTPS GET. No API key, no OAuth, no mTLS, no
+    referer or origin restriction observed.
+  customerPortal: >-
+    Azure AD B2C via Sitecore Identity. Confirmed by the auto-POST form at
+    https://www.saskpower.com/Profile/My-Dashboard targeting
+    /identity/externallogin?authenticationType=SaskPower.Azure.B2C.
+  partnerPortal: >-
+    Microsoft Entra ID (Azure AD) OpenID Connect at partner.saskpower.com,
+    tenant dbe9bd7b-4b3a-44b3-b358-e61ff34d58b2.
+  apiGateway: >-
+    TIBCO Cloud API Management (Mashery) at api.saskpower.com. Auth scheme not
+    determinable — no service is publicly mapped.
+  openidConnectDiscovery: >-
+    Not served on the primary host. https://www.saskpower.com/.well-known/openid-configuration
+    and /.well-known/oauth-authorization-server both return HTTP 200 but with
+    text/html carrying <title>404</title> — the Sitecore soft-404, not a
+    discovery document. Both were opened and confirmed to be HTML.
+    https://api.saskpower.com/.well-known/openid-configuration returns HTTP 596.
+
+downloadableContracts:
+  found: false
+  specsHarvested: 0
+  openapiDirectory: none
+  note: >-
+    No machine-readable API contract of any kind is published. No OpenAPI, no
+    Swagger, no WSDL, no Postman collection, no GraphQL schema, no AsyncAPI.
+    https://www.saskpower.com/openapi.json and /swagger.json both return a genuine
+    HTTP 404. /api-docs, /developers, /developer, /api, /apis, /docs, /data,
+    /open-data, /opendata all return HTTP 200 carrying the Sitecore soft-404 page
+    (<title>404</title>, 140,586 bytes, identical byte length across all of them);
+    each was opened and confirmed to be the error page, so none is a portal. On
+    the gateway, https://api.saskpower.com/openapi.json and /swagger.json both
+    return HTTP 596 ERR_596_SERVICE_NOT_FOUND. Nothing was saved because nothing
+    real exists to save.
+
+probes:
+  - url: https://www.saskpower.com/
+    status: 200
+    note: Corporate site, Sitecore on Microsoft-IIS/10.0 behind Azure Application Gateway. meta Description is only "SaskPower Home Page".
+  - url: https://saskpower.com/
+    status: 200
+    note: Redirects to https://saskpower.com/home. www is the canonical host.
+  - url: https://developer.saskpower.com/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://developers.saskpower.com/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://docs.saskpower.com/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://data.saskpower.com/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://opendata.saskpower.com/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://apis.saskpower.com/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://my.saskpower.com/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://account.saskpower.com/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://outages.saskpower.com/
+    status: 0
+    note: DNS does not resolve.
+  - url: https://dev.saskpower.com/
+    status: 0
+    note: NXDOMAIN.
+  - url: https://sandbox.saskpower.com/
+    status: 0
+    note: NXDOMAIN.
+  - url: https://portal.saskpower.com/
+    status: 0
+    note: NXDOMAIN.
+  - url: https://gis.saskpower.com/
+    status: 0
+    note: NXDOMAIN.
+  - url: https://maps.saskpower.com/
+    status: 0
+    note: NXDOMAIN.
+  - url: https://ev.saskpower.com/
+    status: 0
+    note: NXDOMAIN.
+  - url: https://ws.saskpower.com/
+    status: 0
+    note: NXDOMAIN.
+  - url: https://services.saskpower.com/
+    status: 0
+    note: NXDOMAIN.
+  - url: https://integration.saskpower.com/
+    status: 0
+    note: NXDOMAIN.
+  - url: https://api.saskpower.com/
+    status: 596
+    note: >-
+      Live TIBCO/Mashery gateway. CNAME chain saskpower1.api.mashery.com ->
+      td-saskpower1.mashery.com. Response headers x-mashery-error-code
+      ERR_596_SERVICE_NOT_FOUND and Server Mashery Proxy, body
+      "<h1>596 Service Not Found</h1>". Same for /v1, /v2, /v3, /api, /outages,
+      /openapi.json, /swagger.json, and both .well-known paths.
+  - url: https://api-info.saskpower.com/
+    status: 0
+    note: >-
+      NXDOMAIN on 8.8.8.8 and 1.1.1.1. Search engines still index
+      https://api-info.saskpower.com/member/register as "Register for an Account
+      - ESB - SaskPower", a TIBCO Cloud API Management portal requiring agreement
+      to the TIBCO Cloud Terms of Service. The portal is gone; recorded as a dead
+      former developer portal, NOT as a confirmed one.
+  - url: https://esb.saskpower.com/
+    status: 0
+    note: Resolves to 104.249.133.83 but the TLS connection does not complete from here.
+  - url: https://partner.saskpower.com/
+    status: 200
+    note: >-
+      302s to login.microsoftonline.com tenant dbe9bd7b-4b3a-44b3-b358-e61ff34d58b2,
+      OIDC response_type=code id_token, scope=openid profile. Corporate partner
+      SSO, not a developer portal.
+  - url: https://profile.saskpower.com/
+    status: 0
+    note: >-
+      Resolves via 8.8.8.8 to 159.18.164.20 but did not complete a connection
+      from this network. Referenced on saskpower.com as the vertexURL for the
+      MySaskPower customer profile app.
+  - url: https://engage.saskpower.com/
+    status: 200
+    note: EngagementHQ community-consultation SaaS. Vendor platform, not a SaskPower API.
+  - url: https://outagemap.saskpower.com/
+    status: 200
+    note: Serves the same Sitecore site shell at root; the KML file is the real payload.
+  - url: https://outagemap.saskpower.com/Files/GetKmlFile
+    status: 200
+    note: text/xml, 633,252 bytes, valid KML 2.1 with planned/unplanned outage styles and polygons. Anonymous.
+  - url: https://www.saskpower.com/ignitionapi/PowerUseDashboard/GetPowerUseDashboardData
+    status: 200
+    note: >-
+      application/json, 7,917 bytes, valid JSON. Fields observed: callId, time,
+      asOfDate, generation, netInterchange, systemSupply, systemDemand,
+      historicalPeakDemand{demand,date}, generationByType[{type,
+      percentOfTotalGeneration, totalGenerationForType, powerUseFacilities[{name,
+      URL}]}], SupplyDataText, HistoricalPeakDemandDate. Anonymous.
+  - url: https://www.saskpower.com/ignitionapi/Content/GetRSSFeed
+    status: 200
+    note: >-
+      text/xml, 13,058 bytes, valid RSS 2.0 "SaskPower Planned Power Outages".
+      Anonymous. Discovered from the openRSSFeedLink handler in SP.scripts.js and
+      confirmed present as a visible "RSS feed" link on the planned-outage page.
+  - url: https://www.saskpower.com/feeds/outages.xml
+    status: 200
+    note: >-
+      The atom:link self-reference inside the RSS feed. Returns a SaskPower
+      "500 Server Error" HTML page, 1,889 bytes. Dead; the feed's own declared
+      address is stale.
+  - url: https://www.saskpower.com/api/sitecore/Content/GetSmartMeterKmlFile
+    status: 200
+    note: >-
+      856,869 bytes, valid KML 2.1 with in-progress/coming-up/complete/unassigned
+      deployment styles. Served as Content-Type text/html despite XML body.
+      Anonymous. Referenced only from SP.scripts.js.
+  - url: https://www.saskpower.com/our-power-future/our-electricity/electrical-system/where-your-power-comes-from
+    status: 200
+    note: >-
+      Public generation-mix page. Renders "--" placeholders server-side and fills
+      them from the JSON endpoint client-side. Carries the line "All information
+      on this page is subject to our Digital Terms and Conditions."
+  - url: https://www.saskpower.com/outages/power-outages/outage-updates
+    status: 200
+    note: Outage Map and Updates. Markup references outagemap.saskpower.com/Files/GetKmlFile.
+  - url: https://www.saskpower.com/outages/power-outages/outages-planned-for-necessary-maintenance
+    status: 200
+    note: Carries the visible "RSS feed" link (element id openRSSFeedLink).
+  - url: https://www.saskpower.com/our-power-future/investing-in-a-reliable-power-grid/smart-meters
+    status: 200
+    note: Smart meter programme. Mentions "more information about your power use"; no Green Button, no API, no export format.
+  - url: https://www.saskpower.com/our-power-future/investing-in-a-reliable-power-grid/smart-meters/meter-installation-map
+    status: 200
+    note: Installation map page; the KML behind it is loaded from JavaScript.
+  - url: https://www.saskpower.com/our-power-future/creating-a-cleaner-power-future/smart-meters/understanding-your-smart-meter-data
+    status: 200
+    note: Soft-404 (<title>404</title>) — the older path indexed by search engines has moved.
+  - url: https://www.saskpower.com/Profile/My-Dashboard
+    status: 200
+    note: >-
+      486-byte auto-submitting form POSTing to
+      /identity/externallogin?authenticationType=SaskPower.Azure.B2C. Confirms the
+      MySaskPower customer auth model.
+  - url: https://www.saskpower.com/green-button
+    status: 200
+    note: Soft-404. No Green Button page exists on saskpower.com.
+  - url: https://www.saskpower.com/developers
+    status: 200
+    note: Soft-404, 140,586 bytes, <title>404</title>. Opened and confirmed.
+  - url: https://www.saskpower.com/developer
+    status: 200
+    note: Soft-404.
+  - url: https://www.saskpower.com/api
+    status: 200
+    note: Soft-404. Opened and confirmed HTML.
+  - url: https://www.saskpower.com/apis
+    status: 200
+    note: Soft-404.
+  - url: https://www.saskpower.com/docs
+    status: 200
+    note: Soft-404.
+  - url: https://www.saskpower.com/data
+    status: 200
+    note: Soft-404.
+  - url: https://www.saskpower.com/open-data
+    status: 200
+    note: Soft-404.
+  - url: https://www.saskpower.com/opendata
+    status: 200
+    note: Soft-404.
+  - url: https://www.saskpower.com/api-docs
+    status: 200
+    note: Soft-404.
+  - url: https://www.saskpower.com/openapi.json
+    status: 404
+  - url: https://www.saskpower.com/swagger.json
+    status: 404
+  - url: https://www.saskpower.com/.well-known/openid-configuration
+    status: 200
+    note: Soft-404 HTML, not a discovery document.
+  - url: https://www.saskpower.com/.well-known/oauth-authorization-server
+    status: 200
+    note: Soft-404 HTML.
+  - url: https://www.saskpower.com/.well-known/security.txt
+    status: 404
+  - url: https://www.saskpower.com/robots.txt
+    status: 404
+  - url: https://www.saskpower.com/sitemap.xml
+    status: 200
+    note: >-
+      466 URLs, generated by mysitemapgenerator.com with lastmod values of
+      2021-11-26. Third-party generated and stale. No developer, API, or data
+      pages appear in it.
+  - url: https://www.saskpower.com/terms
+    status: 200
+    note: Terms and Conditions. The only live legal page found; /footer/legal/* paths soft-404.
+  - url: https://www.saskpower.com/about-us
+    status: 200
+    note: Carries navigation and leadership links only; no company facts, no customer counts.
+  - url: https://saskpower.streetlightoutages.com/map/default.html
+    status: 200
+    note: >-
+      Third-party streetlight outage reporting map by iFactor Consulting, using
+      Janrain/rpxnow and Google Maps. Vendor tool; no SaskPower API and no data
+      feed exposed.
+  - url: https://github.com/saskpower
+    status: 200
+    note: >-
+      Organization exists (id 30703064, created 2017-08-03) with 0 public
+      repositories and no name, company, blog, location or description set.
+      Ownership by Saskatchewan Power Corporation could not be confirmed, so it
+      was deliberately NOT recorded in apis.yml.
+  - url: https://www.linkedin.com/company/saskpower
+    status: 200
+  - url: https://www.greenbuttonalliance.org/canadian-initiatives
+    status: 200
+    note: >-
+      Names Ontario and Nova Scotia only, and states it has no information about
+      Green Button deployments in Saskatchewan. Primary evidence for regime none.
+  - url: https://open.canada.ca/data/en/api/3/action/package_search?q=saskpower
+    status: 200
+    note: 0 datasets. SaskPower publishes nothing through the federal open data portal.
+  - url: https://data.saskatchewan.ca/
+    status: 0
+    note: Does not resolve. Saskatchewan has no open data portal at that host.
+  - url: https://www.saskatchewan.ca/government/government-structure/crown-corporations/crown-corporation-services/saskpower
+    status: 403
+    note: Government of Saskatchewan Crown corporation page blocked automated fetch.
+
+undocumentedSiteEndpointsObserved:
+  note: >-
+    Recorded for completeness and deliberately NOT listed as APIs in apis.yml.
+    These are Sitecore MVC controller actions serving the website's own forms and
+    consent plumbing, extracted from
+    https://www.saskpower.com/assets/scripts/SP.scripts.js and
+    /src/scripts/global/commonFunction.js. They are internal website mechanics,
+    not a product, and several are POST form submissions.
+  endpoints:
+    - /api/sitecore/ReportAnOutage/GetCreateOutage
+    - /api/sitecore/ReportAnOutage/GetOutageStatus
+    - /api/sitecore/ReportAnOutage/GetinstallationLookup
+    - /api/sitecore/StartStopTransfer/SubmitForm
+    - /api/sitecore/CustomerPlannedMaintenance/SubmitForm
+    - /api/sitecore/TreeTrim/SubmitTreeTrimmingForm
+    - /api/sitecore/GoogleMapsUpload/UploadFile
+    - /api/sitecore/B2CAuthentication/ExtendLoginCookie
+    - /api/sitecore/B2CAuthentication/Logout
+    - /api/sitecore/AccountSelector/GetUpdatedCookieValue
+    - /api/sitecore/TrackingCookieConsent/GetConsentChoice
+    - /api/sitecore/TrackingCookieConsent/GetConsentChoiceAndIdentify
+    - /api/sitecore/TrackingCookieConsent/RevokeConsent
+    - /api/sitecore/Analytics/TrackEvent
+    - /api/sitecore/Analytics/TrackGoal
+    - /Handlers/FileUploadHandler.ashx
+
+sources:
+  - url: https://www.saskpower.com/our-power-future/our-electricity/electrical-system/where-your-power-comes-from
+    type: Documentation
+    note: The only human surface for SaskPower's grid data; source of the JSON endpoint.
+  - url: https://www.saskpower.com/outages/power-outages/outage-updates
+    type: Documentation
+    note: Outage map page; source of the outagemap KML reference.
+  - url: https://www.saskpower.com/outages/power-outages/outages-planned-for-necessary-maintenance
+    type: Documentation
+    note: Planned outage page carrying the visible RSS feed link.
+  - url: https://www.saskpower.com/our-power-future/investing-in-a-reliable-power-grid/smart-meters
+    type: Documentation
+    note: Smart meter programme; no data-sharing or export claim anywhere on it.
+  - url: https://www.saskpower.com/terms
+    type: TermsOfService
+    note: The live Terms and Conditions page.
+  - url: https://www.greenbuttonalliance.org/canadian-initiatives
+    type: Standard
+    note: Evidence that no Green Button mandate or deployment is known in Saskatchewan.
+  - url: https://en.wikipedia.org/wiki/SaskPower
+    type: Reference
+    note: >-
+      Crown corporation status, 1929/1949 founding, customer count, line
+      kilometres, generating capacity, interconnections. Used because SaskPower's
+      own /about-us page publishes none of it.
+  - url: https://github.com/electricitymaps/electricitymaps-contrib/blob/master/DATA_SOURCES.md
+    type: Reference
+    note: >-
+      Lists "Saskatchewan: SaskPower (daily avg)" pointing at the Where Your
+      Power Comes From page — third-party dependence on an undocumented surface.
+
+findings:
+  summary: >-
+    SaskPower is the control case for the energy mandate question: nothing
+    obliges it to publish anything, and it has published no consumer data API,
+    no Green Button surface, no standard, no portal and no contract. What it has
+    is an accident. Four live endpoints — a JSON provincial supply feed, an RSS
+    planned-outage feed, and two KML map layers — answer anonymous GETs with real,
+    parseable grid data, because that is how the marketing website was built. No
+    key, no signup, no documentation, no version, no rate limit, no promise. The
+    only trace of a real API programme is archaeological: api.saskpower.com is a
+    live TIBCO/Mashery gateway that refuses every public path with
+    ERR_596_SERVICE_NOT_FOUND, and its developer portal at api-info.saskpower.com
+    has stopped resolving entirely. Set against Ontario's mandated utilities, the
+    contrast is exact and uncomfortable — regulation there produced a real
+    standards-based consumer API that no developer can find, while the absence of
+    regulation here produced open grid data that no developer is told about. In
+    both cases the missing thing is the same: a developer programme.
+  posture: unmandated-crown-monopoly-with-accidental-open-grid-data
+  gated: false
+  openapiHarvested: false
+  specsHarvested: 0
