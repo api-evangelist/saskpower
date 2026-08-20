@@ -155,6 +155,12 @@ apis:
   - Grid
   - Open Data
   - Undocumented
+  - Real-Time
+  tags_raw:
+  - Outages
+  - Grid
+  - Open Data
+  - Undocumented
   - Real Time
   properties:
   - type: Documentation
